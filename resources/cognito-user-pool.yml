@@ -11,7 +11,7 @@ Resources:
         - email
 
   CognitoUserPoolClient:
-    Type: AWS::Cognito::UserPoolClinet
+    Type: AWS::Cognito::UserPoolClient
     Properties:
       # Generate an app client name based on the stage
       ClientName: ${self:custom.stage}-user-pool-client
@@ -21,7 +21,7 @@ Resources:
         - ADMIN_NO_SRP_AUTH
       GenerateSecret: false
 # Print out the Id of the User Pool that is created
-Outouts:
+Outputs:
   UserPoolId:
     Value:
       Ref: CognitoUserPool
