@@ -11,7 +11,3 @@ phases:
   post_build:
     commands:
       - npm test
-  artifacts:
-  files:
-    - build*/**
-  discard-paths: yes
