@@ -55,7 +55,7 @@ provider:
         - dynamodb:DeleteItem
       Resource: 
         - "Fn::GetAtt": [NotesTable, Arn]
-    -Effect: Allow
+    - Effect: Allow
       Action:
         - codedeploy:*
       Resource:
