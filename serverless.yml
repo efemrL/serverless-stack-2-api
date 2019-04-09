@@ -1,9 +1,11 @@
-service: notes-app-4-api
+service: notes-app-5-api
 
 # Use the serverless-webpack plugin to transpile ES6
 plugins:
   - serverless-webpack
   - serverless-offline
+  - serverless-plugin-canary-deployments
+  - serverless-plugin-aws-alerts
 
 # serverless-webpack configuration
 # Enable auto-packing of external modules
@@ -53,6 +55,11 @@ provider:
         - dynamodb:DeleteItem
       Resource: 
         - "Fn::GetAtt": [NotesTable, Arn]
+    -Effect: Allow
+      Action:
+        - codedeploy:*
+      Resource:
+        - "*"
 
 functions:
   # Defines an HTTP API endpoint that calls the main function in create.js
@@ -69,6 +76,18 @@ functions:
           method: post
           cors: true
           authorizer: aws_iam
+    deploymentSettings:
+      type: Linear10PercentEvery1Minute
+      alias: Live
+      preTrafficHook: preHook
+      postTrafficHook: postHook
+      alarms:
+        - CreateNoteAlarm
+        - name: CreateNoteBarAlarm
+  preHook:
+    handler: hooks.pre
+  postHook:
+    handler: hooks.post
 
   get:
     # Defines an HTTP API endpoint that calls the main function in get.js
@@ -93,6 +112,7 @@ functions:
           method: get
           cors: true
           authorizer: aws_iam
+
 
   update:
     # Defines an HTTP API endpoint that calls the main function in update.js
