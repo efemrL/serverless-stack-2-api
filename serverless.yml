@@ -28,6 +28,9 @@ custom:
   # Fallback to default if it is not in prod
   environment: ${file(env.yml):${self:custom.stage}, file(env.yml):default}
 
+  alerts:
+    dashboards: false
+
 provider:
   name: aws
   runtime: nodejs8.10
@@ -76,6 +79,15 @@ functions:
           method: post
           cors: true
           authorizer: aws_iam
+    alarms:
+      - name: note
+        namespace: 'AWS/Lambda'
+        metric: Errors
+        threshold: 1
+        statistic: Minimum
+        period: 60
+        evaluationPeriods: 1
+        comparisonOperator: GreaterThanOrEqualToThreshold
     deploymentSettings:
       type: Linear10PercentEvery1Minute
       alias: Live
@@ -83,7 +95,6 @@ functions:
       postTrafficHook: postHook
       alarms:
         - CreateNoteAlarm
-        - name: CreateNoteBarAlarm
   preHook:
     handler: hooks.pre
   postHook:
